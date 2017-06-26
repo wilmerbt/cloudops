@@ -1,0 +1,622 @@
+nombrevm            
+localizacion      -------> eastus
+localizacionesp   -------> East US
+flavor            -------> Standard_DS2_v2
+ospublica         -------> Canonical
+osoferta          -------> UbuntuServer
+ossku             -------> 16.10
+osversion         -------> latest
+gruporecursos     -------> Default-Storage-EastUS
+tipoOS            -------> Linux
+
+CREATE TABLE proveedor (
+    idproveedor serial,
+    nombre varchar(30),
+    logo varchar(90),
+    tipologo varchar(30),
+    CONSTRAINT pkeyproveedor PRIMARY KEY(idproveedor)
+);
+
+insert into proveedor(nombre, logo, tipologo) values('Amazon Web Services','amazon-noseleccionado.png','rectangular');
+insert into proveedor(nombre, logo, tipologo) values('Windows Azure','azure-noseleccionado.png','cuadrado');
+insert into proveedor(nombre, logo, tipologo) values('vmware','vmwarenoseleccionado.png','rectangular');
+
+
+CREATE TABLE organizacion (
+    idorganizacion serial,
+    nombre varchar(120) not null,
+    titulo varchar(120) not null,
+    logo varchar(200) null,
+    identificador varchar(30) not null,
+    anchologo integer not null,
+    altologo integer not null,
+    logob varchar(200) null,
+    anchologob integer not null,
+    altologob integer not null,
+    CONSTRAINT pkeyorganizacion PRIMARY KEY(idorganizacion)
+);
+
+insert into organizacion(nombre,titulo,logo,identificador,anchologo,altologo,logob,anchologob,altologob) values('Jc Global Resources de Mexico SA de CV','JCGlobalCloud','Logojcglobal.png','jcglobal',282,120,'logohawk.png',63,127);
+insert into organizacion(nombre,titulo,logo,identificador,anchologo,altologo,logob,anchologob,altologob) values('Ikusi SA de CV','IkusiCloud','logoIkusi.jpg','ikusi',282,150,'logohawk.png',63,127);
+
+CREATE TABLE configuracion (
+    idconfiguracion serial,
+    idorganizacion integer not null,
+    awsaccesskeyid varchar(120) not null,
+    awsaccesskey varchar(240) not null,
+    orchesip varchar(20) not null,
+    orchespuerto integer not null,
+    orchesusuario varchar(20) not null,
+    orchespassword varchar(30) not null,
+    azudirectoryid varchar(60) not null,
+    azuclientid varchar(60) not null,
+    azuclientsecret varchar(60) not null,
+    osip varchar(20) not null,
+    ospuerto varchar(20) not null,
+    osusuario varchar(20) not null,
+    ospassword varchar(20) not null,
+    dbip varchar(20) not null,
+    dbpuerto varchar(20) not null,
+    dbnombre varchar(30) not null,
+    dbusuario varchar(20) not null,
+    dbpassword varchar(20) not null,
+    azustoragekey varchar(200) not null,
+    redesenaws integer not null,
+    CONSTRAINT pkeyconfiguracion PRIMARY KEY(idconfiguracion),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion)        
+);
+
+insert into configuracion(idorganizacion,awsaccesskeyid,awsaccesskey,orchesip,orchespuerto,orchesusuario,orchespassword,azudirectoryid,azuclientid,azuclientsecret,osip,ospuerto,osusuario,ospassword,dbip,dbpuerto,dbnombre,dbusuario,dbpassword,azustoragekey,redesenaws) values(1,'AKIAID5BJACPQ32ZIOLA','LGu/DhW0RAcILNpbeo8suD6o/3uzIosKGc86ApKc','10.80.42.14',8080,'jcglobal','Jcglobal2012','45d88f75-3c38-40c5-9976-d4c99421b31c','93e1f1dd-33b3-4d92-b40f-97a79054b338','Kbt0KYwBV4Kozfi04jrnmL2c2XAOW0CsdtWisV5kluM@','10.80.42.17','22','apache','Jcglobal2012','10.80.42.14','5432','ikusicloud','postgres','Jcglobal2012','dZwgzrIIOtOc6uDsuuLlTZg7Qe8zbMyFCBthV0RYv8E5mIkJO+HYhKZoQxGMCxtxcOBRWArhuZle7zXHXjj4WA@@',3);
+insert into configuracion(idorganizacion,awsaccesskeyid,awsaccesskey,orchesip,orchespuerto,orchesusuario,orchespassword,azudirectoryid,azuclientid,azuclientsecret,osip,ospuerto,osusuario,ospassword,dbip,dbpuerto,dbnombre,dbusuario,dbpassword,azustoragekey,redesenaws) values(2,'AKIAI3GHEGRTXO4RLJXQ','qWVtVtaAitpZSvtp2l+mCC5eNpd941+HnRpDS1s8','10.80.42.14',8080,'jcglobal','Jcglobal2012','967a1b20-8310-402b-9b37-941117029ad8','a66651ca-d90f-46b8-9906-1fe1f3f1a4af','E8KnV3DCrvyUJ4EzxTdaAG0cTUMkck/PzeAPY3ndXSc@','10.80.42.17','22','apache','Jcglobal2012','10.80.42.14','5432','ikusicloud','postgres','Jcglobal2012','FqWkK3iDWcwI99fZi5JqjhX/dyX39LOxK4yqBfz1KDT8hvmnbAMETKTw4UKBanAM0vtECOUbnmqKve5YTgTaMw@@',4);
+
+CREATE TABLE usuario (
+    idusuario serial,
+    idorganizacion integer not null,
+    nombre varchar(30),
+    apellido varchar(30),
+    correo varchar(90),
+    contrasena varchar(60),
+    superusuario integer not null,
+    registro TIMESTAMP WITHOUT TIME ZONE,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    CONSTRAINT pkeyusuario PRIMARY KEY(idusuario),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion)
+);
+
+insert into usuario(idorganizacion,nombre, apellido,correo,contrasena,registro,superusuario) values(1,'Juan','Caceres','juan.caceres@jcgr.net','19339207',now(),1);
+insert into usuario(idorganizacion,nombre, apellido,correo,contrasena,registro,superusuario) values(2,'Lakhsmi','Angarita','lakang7@gmail.com','19339207',now(),1);
+
+CREATE TABLE entidad (
+  identidad serial,
+  idproveedor INTEGER NOT NULL,
+  nombre VARCHAR(30) NULL,
+  CONSTRAINT pkeyentidad PRIMARY KEY(identidad),
+  FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor)
+);
+
+
+insert into entidad(idproveedor,nombre) values(1,'Flavors');
+insert into entidad(idproveedor,nombre) values(1,'Sistemas Operativos');
+insert into entidad(idproveedor,nombre) values(1,'Redes Virtuales');
+insert into entidad(idproveedor,nombre) values(1,'Subredes');
+insert into entidad(idproveedor,nombre) values(1,'Grupos de Seguridad');
+insert into entidad(idproveedor,nombre) values(1,'Key Pairs');
+insert into entidad(idproveedor,nombre) values(1,'Servidores');
+insert into entidad(idproveedor,nombre) values(1,'Discos');
+
+insert into entidad(idproveedor,nombre) values(2,'Flavors');
+insert into entidad(idproveedor,nombre) values(2,'Sistemas Operativos');
+insert into entidad(idproveedor,nombre) values(2,'Redes Virtuales');
+insert into entidad(idproveedor,nombre) values(2,'Subredes');
+insert into entidad(idproveedor,nombre) values(2,'Grupos de Seguridad');
+insert into entidad(idproveedor,nombre) values(2,'Servidores');
+insert into entidad(idproveedor,nombre) values(2,'Discos');
+
+CREATE TABLE acciones (
+  idacciones serial,
+  identidad INTEGER NOT NULL,
+  nombre VARCHAR(30) NULL,
+  CONSTRAINT pkeyacciones PRIMARY KEY(idacciones),
+  FOREIGN KEY (identidad) REFERENCES entidad(identidad)
+);
+
+insert into acciones (identidad,nombre) values(1,'Visualizar');
+insert into acciones (identidad,nombre) values(1,'Crear');
+insert into acciones (identidad,nombre) values(1,'Editar');
+insert into acciones (identidad,nombre) values(1,'Eliminar');
+
+insert into acciones (identidad,nombre) values(2,'Visualizar');
+insert into acciones (identidad,nombre) values(2,'Crear');
+insert into acciones (identidad,nombre) values(2,'Editar');
+insert into acciones (identidad,nombre) values(2,'Eliminar');
+
+insert into acciones (identidad,nombre) values(3,'Visualizar');
+insert into acciones (identidad,nombre) values(3,'Crear');
+insert into acciones (identidad,nombre) values(3,'Eliminar');
+
+insert into acciones (identidad,nombre) values(4,'Visualizar');
+insert into acciones (identidad,nombre) values(4,'Crear');
+insert into acciones (identidad,nombre) values(4,'Eliminar');
+
+insert into acciones (identidad,nombre) values(5,'Visualizar');
+insert into acciones (identidad,nombre) values(5,'Crear');
+insert into acciones (identidad,nombre) values(5,'Editar');
+insert into acciones (identidad,nombre) values(5,'Eliminar');
+
+insert into acciones (identidad,nombre) values(6,'Visualizar');
+insert into acciones (identidad,nombre) values(6,'Crear');
+insert into acciones (identidad,nombre) values(6,'Descargar');
+insert into acciones (identidad,nombre) values(6,'Eliminar');
+
+insert into acciones (identidad,nombre) values(7,'Visualizar');
+insert into acciones (identidad,nombre) values(7,'Crear');
+insert into acciones (identidad,nombre) values(7,'Apagar');
+insert into acciones (identidad,nombre) values(7,'Encender');
+insert into acciones (identidad,nombre) values(7,'Reiniciar');
+insert into acciones (identidad,nombre) values(7,'Eliminar');
+insert into acciones (identidad,nombre) values(7,'Agregar Disco');
+
+insert into acciones (identidad,nombre) values(8,'Visualizar');
+insert into acciones (identidad,nombre) values(8,'Crear Disco');
+insert into acciones (identidad,nombre) values(8,'Desconectar');
+insert into acciones (identidad,nombre) values(8,'Conectar');
+insert into acciones (identidad,nombre) values(8,'Eliminar');
+
+insert into acciones (identidad,nombre) values(9,'Visualizar');
+insert into acciones (identidad,nombre) values(9,'Crear');
+insert into acciones (identidad,nombre) values(9,'Editar');
+insert into acciones (identidad,nombre) values(9,'Eliminar');
+
+insert into acciones (identidad,nombre) values(10,'Visualizar');
+insert into acciones (identidad,nombre) values(10,'Crear');
+insert into acciones (identidad,nombre) values(10,'Editar');
+insert into acciones (identidad,nombre) values(10,'Eliminar');
+
+insert into acciones (identidad,nombre) values(11,'Visualizar');
+insert into acciones (identidad,nombre) values(11,'Crear');
+insert into acciones (identidad,nombre) values(11,'Eliminar');
+
+insert into acciones (identidad,nombre) values(12,'Visualizar');
+insert into acciones (identidad,nombre) values(12,'Crear');
+insert into acciones (identidad,nombre) values(12,'Eliminar');
+
+insert into acciones (identidad,nombre) values(13,'Visualizar');
+insert into acciones (identidad,nombre) values(13,'Crear');
+insert into acciones (identidad,nombre) values(13,'Editar');
+insert into acciones (identidad,nombre) values(13,'Eliminar');
+
+insert into acciones (identidad,nombre) values(14,'Visualizar');
+insert into acciones (identidad,nombre) values(14,'Crear');
+insert into acciones (identidad,nombre) values(14,'Apagar');
+insert into acciones (identidad,nombre) values(14,'Encender');
+insert into acciones (identidad,nombre) values(14,'Reiniciar');
+insert into acciones (identidad,nombre) values(14,'Eliminar');
+insert into acciones (identidad,nombre) values(14,'Agregar Disco');
+
+insert into acciones (identidad,nombre) values(15,'Visualizar');
+insert into acciones (identidad,nombre) values(15,'Crear Disco');
+insert into acciones (identidad,nombre) values(15,'Desconectar');
+insert into acciones (identidad,nombre) values(15,'Conectar');
+insert into acciones (identidad,nombre) values(15,'Eliminar');
+
+
+CREATE TABLE perfil (
+  idperfil serial,
+  nombre VARCHAR(30) NULL,
+  fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+  CONSTRAINT pkeyperfil PRIMARY KEY(idperfil)
+);
+
+insert into perfil(nombre) values('Super Admin Amazon EC2');
+insert into perfil(nombre) values('Super Admin Windows Azure');
+
+CREATE TABLE perfiles_acciones (
+  idperfiles_acciones serial,
+  idacciones INTEGER NOT NULL,
+  idperfil INTEGER NOT NULL,
+  CONSTRAINT pkeyperfiles_acciones PRIMARY KEY(idperfiles_acciones),
+  FOREIGN KEY (idperfil) REFERENCES perfil(idperfil),
+  FOREIGN KEY (idacciones) REFERENCES acciones(idacciones)
+);
+
+insert into perfiles_acciones (idperfil,idacciones) values(1,1);
+insert into perfiles_acciones (idperfil,idacciones) values(1,2);
+insert into perfiles_acciones (idperfil,idacciones) values(1,3);
+insert into perfiles_acciones (idperfil,idacciones) values(1,4);
+insert into perfiles_acciones (idperfil,idacciones) values(1,5);
+insert into perfiles_acciones (idperfil,idacciones) values(1,6);
+insert into perfiles_acciones (idperfil,idacciones) values(1,7);
+insert into perfiles_acciones (idperfil,idacciones) values(1,8);
+insert into perfiles_acciones (idperfil,idacciones) values(1,9);
+insert into perfiles_acciones (idperfil,idacciones) values(1,10);
+insert into perfiles_acciones (idperfil,idacciones) values(1,11);
+insert into perfiles_acciones (idperfil,idacciones) values(1,12);
+insert into perfiles_acciones (idperfil,idacciones) values(1,13);
+insert into perfiles_acciones (idperfil,idacciones) values(1,14);
+insert into perfiles_acciones (idperfil,idacciones) values(1,15);
+insert into perfiles_acciones (idperfil,idacciones) values(1,16);
+insert into perfiles_acciones (idperfil,idacciones) values(1,17);
+insert into perfiles_acciones (idperfil,idacciones) values(1,18);
+insert into perfiles_acciones (idperfil,idacciones) values(1,18);
+insert into perfiles_acciones (idperfil,idacciones) values(1,19);
+insert into perfiles_acciones (idperfil,idacciones) values(1,20);
+insert into perfiles_acciones (idperfil,idacciones) values(1,21);
+insert into perfiles_acciones (idperfil,idacciones) values(1,22);
+insert into perfiles_acciones (idperfil,idacciones) values(1,23);
+insert into perfiles_acciones (idperfil,idacciones) values(1,24);
+insert into perfiles_acciones (idperfil,idacciones) values(1,25);
+insert into perfiles_acciones (idperfil,idacciones) values(1,26);
+insert into perfiles_acciones (idperfil,idacciones) values(1,27);
+insert into perfiles_acciones (idperfil,idacciones) values(1,28);
+insert into perfiles_acciones (idperfil,idacciones) values(1,29);
+insert into perfiles_acciones (idperfil,idacciones) values(1,30);
+insert into perfiles_acciones (idperfil,idacciones) values(1,31);
+insert into perfiles_acciones (idperfil,idacciones) values(1,32);
+insert into perfiles_acciones (idperfil,idacciones) values(1,33);
+insert into perfiles_acciones (idperfil,idacciones) values(1,34);
+insert into perfiles_acciones (idperfil,idacciones) values(2,35);
+insert into perfiles_acciones (idperfil,idacciones) values(2,36);
+insert into perfiles_acciones (idperfil,idacciones) values(2,37);
+insert into perfiles_acciones (idperfil,idacciones) values(2,38);
+insert into perfiles_acciones (idperfil,idacciones) values(2,39);
+insert into perfiles_acciones (idperfil,idacciones) values(2,40);
+insert into perfiles_acciones (idperfil,idacciones) values(2,41);
+insert into perfiles_acciones (idperfil,idacciones) values(2,42);
+insert into perfiles_acciones (idperfil,idacciones) values(2,43);
+insert into perfiles_acciones (idperfil,idacciones) values(2,44);
+insert into perfiles_acciones (idperfil,idacciones) values(2,45);
+insert into perfiles_acciones (idperfil,idacciones) values(2,46);
+insert into perfiles_acciones (idperfil,idacciones) values(2,47);
+insert into perfiles_acciones (idperfil,idacciones) values(2,48);
+insert into perfiles_acciones (idperfil,idacciones) values(2,49);
+insert into perfiles_acciones (idperfil,idacciones) values(2,50);
+insert into perfiles_acciones (idperfil,idacciones) values(2,51);
+insert into perfiles_acciones (idperfil,idacciones) values(2,52);
+insert into perfiles_acciones (idperfil,idacciones) values(2,53);
+insert into perfiles_acciones (idperfil,idacciones) values(2,54);
+insert into perfiles_acciones (idperfil,idacciones) values(2,55);
+insert into perfiles_acciones (idperfil,idacciones) values(2,56);
+insert into perfiles_acciones (idperfil,idacciones) values(2,57);
+insert into perfiles_acciones (idperfil,idacciones) values(2,58);
+insert into perfiles_acciones (idperfil,idacciones) values(2,59);
+insert into perfiles_acciones (idperfil,idacciones) values(2,60);
+insert into perfiles_acciones (idperfil,idacciones) values(2,61);
+insert into perfiles_acciones (idperfil,idacciones) values(2,62);
+insert into perfiles_acciones (idperfil,idacciones) values(2,63);
+insert into perfiles_acciones (idperfil,idacciones) values(2,64);
+
+
+
+CREATE TABLE usuarios_perfiles (
+  idusuarios_perfiles serial,
+  idperfil INTEGER NOT NULL,
+  idusuario INTEGER NOT NULL,
+  CONSTRAINT pkeyusuarios_perfiles PRIMARY KEY(idusuarios_perfiles),
+  FOREIGN KEY (idusuario) REFERENCES usuario(idusuario),
+  FOREIGN KEY (idperfil) REFERENCES perfil(idperfil)
+);
+
+CREATE TABLE tipoos (
+    idtipoos serial,
+    nombre varchar(30),
+    logo varchar(60),
+    CONSTRAINT pkeytipoos PRIMARY KEY(idtipoos)
+);
+
+insert into tipoos(nombre,logo) values('Windows Server','azure-noseleccionado.png');
+insert into tipoos(nombre,logo) values('Red Hat','redhat.png');
+insert into tipoos(nombre,logo) values('Ubuntu','ubuntu.png');
+insert into tipoos(nombre,logo) values('SUSE','suse.png');
+
+
+CREATE TABLE proveedor_tipoos (
+    idproveedor_tipoos serial,
+    idproveedor integer not null,
+    idtipoos integer not null,
+    CONSTRAINT pkeyproveedor_tipoos PRIMARY KEY(idproveedor_tipoos),
+    FOREIGN KEY (idtipoos) REFERENCES tipoos(idtipoos),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor)
+);
+
+insert into proveedor_tipoos(idproveedor,idtipoos) values(2,1);
+insert into proveedor_tipoos(idproveedor,idtipoos) values(2,2);
+insert into proveedor_tipoos(idproveedor,idtipoos) values(2,3);
+
+insert into proveedor_tipoos(idproveedor,idtipoos) values(1,1);
+insert into proveedor_tipoos(idproveedor,idtipoos) values(1,2);
+insert into proveedor_tipoos(idproveedor,idtipoos) values(1,3);
+insert into proveedor_tipoos(idproveedor,idtipoos) values(1,4);
+
+CREATE TABLE sistemaoperativo (
+    idsistemaoperativo serial,
+    idproveedor integer not null,
+    idtipoos integer not null,
+    nombre varchar(120),
+    identificador varchar(200),
+    clasifica varchar (20),
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    CONSTRAINT pkeysistemaoperativo PRIMARY KEY(idsistemaoperativo),
+    FOREIGN KEY (idtipoos) REFERENCES tipoos(idtipoos),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor)
+);
+
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',2,1,'Windows Server 2008 R2 SP1','MicrosoftWindowsServer_WindowsServer_2008-R2-SP1_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',2,1,'Windows Server 2012 Datacenter','MicrosoftWindowsServer_WindowsServer_2012-Datacenter_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',2,1,'Windows Server 2012 R2 Datacenter','MicrosoftWindowsServer_WindowsServer_2012-R2-Datacenter_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',2,1,'Windows Server 2016 Datacenter','MicrosoftWindowsServer_WindowsServer_2016-Datacenter_latest');
+
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,2,'Red Hat Enterprise Linux 6.7','RedHat_RHEL_6.7_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,2,'Red Hat Enterprise Linux 6.8','RedHat_RHEL_6.8_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,2,'Red Hat Enterprise Linux 7.2','RedHat_RHEL_7.2_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,2,'Red Hat Enterprise Linux 7.3','RedHat_RHEL_7.3_latest');
+
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,3,'Ubuntu Server 12.04.5 LTS','Canonical_UbuntuServer_12.04.5-LTS_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,3,'Ubuntu Server 14.04 LTS','Canonical_UbuntuServer_14.04.0-LTS_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,3,'Ubuntu Server 16.04 LTS','Canonical_UbuntuServer_16.04.0-LTS_latest');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',2,3,'Ubuntu Server 16.10','Canonical_UbuntuServer_16.10_latest');
+
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',1,1,'Microsoft Windows Server 2008 R2 Base','ami-b36b1da5');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',1,1,'Microsoft Windows Server 2012 R2 Base','ami-271b6d31');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Windows',1,1,'Microsoft Windows Server 2016 Base with Containers','ami-17106201');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',1,2,'Red Hat Enterprise Linux 7.3 (HVM)','ami-b63769a1');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',1,3,'Ubuntu Server 14.04 LTS (HVM)','ami-772aa961');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',1,3,'Ubuntu Server 16.04 LTS (HVM)','ami-80861296');
+insert into sistemaoperativo(clasifica,idproveedor,idtipoos,nombre,identificador) values('Linux',1,4,'SUSE Linux Enterprise Server 12 SP2 (HVM)','ami-fde4ebea');
+
+CREATE TABLE flavor (
+    idflavor serial,
+    idproveedor integer not null,
+    nombre varchar(30),
+    identificador varchar(120),
+    numcpu integer null,
+    memoriaram integer null,
+    tamanoosdisk integer null,
+    tamanoextradisk integer null,
+    disextra integer null,
+    precio numeric not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    CONSTRAINT pkeyflavor PRIMARY KEY(idflavor),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor)
+);
+
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(2,'Standard_DS1_v2','Standard_DS1_v2',1,3584,50000,7168,2,2.8);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(2,'Standard_DS2_v2','Standard_DS2_v2',2,7168,100000,14336,4,4.3);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(2,'Standard_DS3_v2','Standard_DS3_v2',4,14336,200000,28672,8,8.1);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(2,'Standard_DS4_v2','Standard_DS4_v2',8,28672,400000,57344,16,16.22);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(2,'Standard_DS5_v2','Standard_DS5_v2',16,57344,800000,114688,32,32.84);
+
+
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(1,'t2.micro','t2.micro',1,1,20,null,null,2.8);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(1,'t2.small','t2.small',1,2,40,null,null,5.6);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(1,'t2.medium','t2.medium',2,4,180,null,null,12.34);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(1,'t2.large','t2.large',2,8,320,null,null,20.00);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(1,'t2.xlarge','t2.xlarge',4,16,640,null,null,23.54);
+insert into flavor(idproveedor,nombre,identificador,numcpu,memoriaram, tamanoosdisk,tamanoextradisk,disextra,precio) values(1,'t2.2xlarge','t2.2xlarge',8,32,1200,null,null,41.16);
+
+CREATE TABLE flavor_historico (
+    idflavor_historico serial,
+    idflavor integer not null,
+    desde TIMESTAMP WITHOUT TIME ZONE not null,
+    hasta TIMESTAMP WITHOUT TIME ZONE null,
+    precio numeric not null,
+    CONSTRAINT pkeyidflavor_historico PRIMARY KEY(idflavor_historico),
+    FOREIGN KEY (idflavor) REFERENCES flavor(idflavor)
+);
+
+insert into flavor_historico(idflavor,desde,precio) values(1,now(),2.8);
+insert into flavor_historico(idflavor,desde,precio) values(2,now(),4.3);
+insert into flavor_historico(idflavor,desde,precio) values(3,now(),8.1);
+insert into flavor_historico(idflavor,desde,precio) values(4,now(),16.22);
+insert into flavor_historico(idflavor,desde,precio) values(5,now(),32.84);
+
+create table location (
+    idlocation serial,
+    idproveedor integer not null,
+    nombre varchar(30),
+    identificador varchar(120) null,
+    identificadorespecial varchar(120) null,
+    CONSTRAINT pkeylocation PRIMARY KEY(idlocation),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor)
+);
+
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(2,'East US','eastus','East US');
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(1,'US East 1A','us-east-1a','us-east-1a');
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(1,'US East 1B','us-east-1b','us-east-1b');
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(1,'US East 1C','us-east-1c','us-east-1c');
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(1,'US East 1D','us-east-1d','us-east-1d');
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(1,'US East 1E','us-east-1e','us-east-1e');
+insert into location(idproveedor,nombre,identificador,identificadorespecial) values(2,'Central US','centralus','Central US');
+
+
+create table organizacion_location(
+    idorganizacion_localizacion serial,
+    idorganizacion integer not null,
+    idlocation integer not null,   
+    idsuscripcion varchar(60) not null,
+    gruporecursos varchar(120) null,
+    estorageacount varchar(120) null,
+    contenedorstorage varchar(120) null,
+    CONSTRAINT pkeyidorganizacion_localizacion PRIMARY KEY(idorganizacion_localizacion),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion),
+    FOREIGN KEY (idlocation) REFERENCES location(idlocation)    
+);
+
+insert into organizacion_location(idorganizacion,idlocation,idsuscripcion,gruporecursos,estorageacount,contenedorstorage) values(1,1,'e33f4812-4d76-4525-a1b0-7de45287b97b','Default-Storage-EastUS','almacenamientoesteeu','vhds');
+insert into organizacion_location(idorganizacion,idlocation,idsuscripcion,gruporecursos,estorageacount,contenedorstorage) values(2,7,'17bf586e-6072-4e5f-900d-90467e227f73','Hawk','hawkikusi','vhds');
+
+
+
+create table red(
+    idred serial,
+    idproveedor integer not null,
+    idorganizacion integer not null,
+    idlocation integer not null,    
+    nombre varchar(30) not null,
+    idreal varchar(120) null,
+    ipv4cidr varchar(30) not null,
+    fecha_creacion TIMESTAMP WITHOUT TIME ZONE not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    internetgateway varchar(40) null,
+    CONSTRAINT pkeyred PRIMARY KEY(idred),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor),
+    FOREIGN KEY (idlocation) REFERENCES location(idlocation),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion)    
+);
+
+create table subred(
+    idsubred serial,
+    idred integer not null,   
+    nombre varchar(30) not null,
+    idreal varchar(120) null,
+    ipv4cidr varchar(30) not null,
+    fecha_creacion TIMESTAMP WITHOUT TIME ZONE not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    CONSTRAINT pkeysubred PRIMARY KEY(idsubred),
+    FOREIGN KEY (idred) REFERENCES red(idred) 
+);
+
+
+create table gruposeguridad(
+    idgruposeguridad serial,
+    idproveedor integer not null,  
+    idorganizacion integer not null,
+    idlocation integer not null, 
+    nombre varchar(30) null,
+    idreal varchar(120) null,
+    idred integer null,
+    fecha_creacion TIMESTAMP WITHOUT TIME ZONE not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,        
+    CONSTRAINT pkeygruposegurida PRIMARY KEY(idgruposeguridad),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion),
+    FOREIGN KEY (idlocation) REFERENCES location(idlocation),     
+    FOREIGN KEY (idred) REFERENCES red(idred)
+);
+
+create table reglagrupo(
+    idreglagrupo serial,
+    idgruposeguridad integer not null,
+    nombreregla varchar(30) null,
+    protocolo varchar(12) not null,
+    puerto integer not null,
+    accion varchar(30) null,
+    origen varchar(30) null,
+    destino varchar(30) null,
+    tipo varchar(30) not null,
+    prioridad integer null,
+    CONSTRAINT pkeyreglagrupo PRIMARY KEY(idreglagrupo),
+    FOREIGN KEY (idgruposeguridad) REFERENCES gruposeguridad(idgruposeguridad)        
+);
+
+create table keypair(
+    idkeypair serial,
+    idproveedor integer not null,
+    idorganizacion integer not null,
+    nombre varchar(30) not null,
+    fingerprint varchar(240) null,
+    privatekey varchar(2400) null,
+    fecha_creacion TIMESTAMP WITHOUT TIME ZONE not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    CONSTRAINT pkeykeypair PRIMARY KEY(idkeypair),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion)    
+);
+
+create table servidor(
+    idservidor serial,
+    idproveedor integer not null,
+    idorganizacion integer not null,
+    idusuario integer not null,
+    idflavor integer not null,
+    idsistemaoperativo integer not null,
+    idlocation integer not null,
+    idkeypair integer null,
+    nombrevm varchar(30) not null,
+    fecha_creacion TIMESTAMP WITHOUT TIME ZONE not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE null,
+    usuarioos varchar(30) not null,
+    contrasenaos varchar(20) not null,
+    vmid varchar(60) null,
+    uri varchar(200) null,
+    ippublica varchar(20) null,
+    ipprivada varchar(20) null,
+    status varchar(30) not null,  
+    idred integer not null,
+    idsubred integer not null,
+    idgruposeguridad integer not null,
+    CONSTRAINT pkeyservidor PRIMARY KEY(idservidor),
+    FOREIGN KEY (idflavor) REFERENCES flavor(idflavor),
+    FOREIGN KEY (idproveedor) REFERENCES proveedor(idproveedor),
+    FOREIGN KEY (idusuario) REFERENCES usuario(idusuario),
+    FOREIGN KEY (idkeypair) REFERENCES keypair(idkeypair),
+    FOREIGN KEY (idsistemaoperativo) REFERENCES sistemaoperativo(idsistemaoperativo),
+    FOREIGN KEY (idlocation) REFERENCES location(idlocation),
+    FOREIGN KEY (idorganizacion) REFERENCES organizacion(idorganizacion),
+    FOREIGN KEY (idred) REFERENCES red(idred),
+    FOREIGN KEY (idsubred) REFERENCES subred(idsubred),
+    FOREIGN KEY (idgruposeguridad) REFERENCES gruposeguridad(idgruposeguridad) 
+);
+
+create table accion(
+    idaccion serial,
+    nombre varchar(30) not null,
+    descripcion varchar(200) not null,
+    CONSTRAINT pkeyaccion PRIMARY KEY(idaccion)
+);
+
+insert into accion(nombre,descripcion) values('Creación','Creación de la maquina virtual');
+insert into accion(nombre,descripcion) values('Apagado','Apagado de la maquina virtual');
+insert into accion(nombre,descripcion) values('Encendido','Encendido de la maquina virtual');
+insert into accion(nombre,descripcion) values('Reinicio','Reinicio de la maquina virtual');
+insert into accion(nombre,descripcion) values('Eliminación','Eliminación de la maquina virtual');
+
+create table bitacoramaquina(
+    idbitacoramaquina serial,
+    idservidor integer not null,
+    idaccion integer not null,
+    fecha_ocurrencia TIMESTAMP WITHOUT TIME ZONE not null,
+    CONSTRAINT pkeybitacoramaquina PRIMARY KEY(idbitacoramaquina),
+    FOREIGN KEY (idservidor) REFERENCES servidor(idservidor),
+    FOREIGN KEY (idaccion) REFERENCES accion(idaccion)
+);
+
+
+create table disco(
+    iddisco serial,
+    idservidor integer not null,
+    nombre varchar(60) null,
+    idenproveedor varchar(60) null,
+    lun integer null,
+    uri varchar(200) null,
+    sizegb integer null,
+    estatus varchar(30) null,
+    estatusazure varchar(30) null,
+    puntomontaje varchar(120) null,
+    fecha_creacion TIMESTAMP WITHOUT TIME ZONE not null,
+    fecha_eliminacion TIMESTAMP WITHOUT TIME ZONE  null,
+    CONSTRAINT pkeydisco PRIMARY KEY(iddisco),
+    FOREIGN KEY (idservidor) REFERENCES servidor(idservidor)
+);
+
+
+
+drop table reglagrupo cascade;
+drop table gruposeguridad cascade;
+drop table subred cascade;
+drop table red cascade;
+drop table disco cascade;
+drop table bitacoramaquina cascade;
+drop table accion cascade;
+drop table keypair cascade;
+drop table servidor cascade;
+drop table organizacion_location cascade;
+drop table location cascade;
+drop table flavor_historico cascade;
+drop table flavor cascade;
+drop table sistemaoperativo cascade;
+drop table proveedor_tipoos cascade;
+drop table tipoos cascade;
+drop table usuario cascade;
+drop table configuracion cascade;
+drop table organizacion cascade;
+drop table proveedor cascade;
